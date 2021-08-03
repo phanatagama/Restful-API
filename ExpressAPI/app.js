@@ -1,8 +1,12 @@
 const express = require('express')
-const books = require('./src/books')
+const bodyParser = require('body-parser')
 const {addBooksHandler,getAllBooksHandler,getBookByIdHandler,deleteBookByIdHandler,putBookByIdHandler} = require('./src/handler')
 const app = express()
 const port = 3000
+
+// Third package
+app.use(bodyParser.json()) // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: false })) // for parsing application/x-www-form-urlencoded
 
 app.post('/books',addBooksHandler )
 

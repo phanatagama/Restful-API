@@ -1,6 +1,7 @@
 const { nanoid } = require('nanoid');
 const books = require('./books')
 
+
 const nameFilter = (bookList, queryName) => bookList.filter(
     (book) => book.name.toLowerCase().includes(queryName.toLowerCase()),
 );
@@ -179,7 +180,7 @@ const getBookByIdHandler = (request, h) => {
           message: 'Buku tidak ditemukan',})
 }
 const deleteBookByIdHandler = (request, h) => {
-  const { bookId } = request.params.bookId;
+  const { bookId } = request.params;
 
   const index = books.findIndex((book) => book.id === bookId);
 
@@ -209,18 +210,11 @@ const deleteBookByIdHandler = (request, h) => {
       })
 }
 const putBookByIdHandler = (request, h) => {
-  const { bookId } = request.params.bookId;
-
-  const {
-    name,
-    year,
-    author,
-    summary,
-    publisher,
-    pageCount,
-    readPage,
-    reading,
-  } = request.body;
+  const { bookId } = request.params;
+  // curl -H 'Content-Type: application/json' -X PUT -d "{name : 'njir', year : 2021, author : 'Aga', summary : 'lorem' , publisher : 'gramedia', pageCount : 12, readPage : 3, reading : false,}" 'http://localhost:3000'
+//  return h.json(request.body);
+  const {name,year,author,summary,publisher,pageCount,readPage,reading} = request.body;
+  console.log('loh')
 
   const updatedAt = new Date().toISOString();
 
