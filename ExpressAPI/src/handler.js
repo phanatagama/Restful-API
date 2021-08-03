@@ -121,7 +121,7 @@ const getAllBooksHandler = (request, h) => {
     let bookList = books;
   
     const { name: queryName, reading: readQuery, finished: finishQuery } = request.query;
-  
+
     if (readQuery !== undefined) {
       bookList = readFilter(bookList, readQuery);
     }
@@ -155,28 +155,28 @@ const getAllBooksHandler = (request, h) => {
     })
 }
 const getBookByIdHandler = (request, h) => {
-    const { bookId } = request.params.bookId;
+  const { bookId }= request.params;
   
-    const book = books.filter((n) => n.id === bookId)[0];
-  
-    if (book !== undefined) {
-      return {
-        status: 'success',
-        data: {
-          book,
-        },
-      };
-    }
-  
-    // const response = h.response({
-    //   status: 'fail',
-    //   message: 'Buku tidak ditemukan',
-    // });
-    // response.code(404);
-    // return response;
-        return h.status(404).json({      
-            status: 'fail',
-            message: 'Buku tidak ditemukan',})
+  const book = books.filter((n) => n.id === bookId)[0];
+
+  if (book !== undefined) {
+    return h.status(200).json({
+      status: 'success',
+      data: {
+        book,
+      },
+    })
+  }
+
+  // const response = h.response({
+  //   status: 'fail',
+  //   message: 'Buku tidak ditemukan',
+  // });
+  // response.code(404);
+  // return response;
+      return h.status(404).json({      
+          status: 'fail',
+          message: 'Buku tidak ditemukan',})
 }
 const deleteBookByIdHandler = (request, h) => {
   const { bookId } = request.params.bookId;
