@@ -1,7 +1,6 @@
 const { nanoid } = require('nanoid');
 const books = require('./books')
 
-
 const nameFilter = (bookList, queryName) => bookList.filter(
     (book) => book.name.toLowerCase().includes(queryName.toLowerCase()),
 );
@@ -88,16 +87,7 @@ const addBooksHandler = (request, h) => {
     const isSuccess = books.filter((book) => book.id === id).length > 0;
   
     if (isSuccess) {
-    //   const response = h.response({
-    //     status: 'success',
-    //     message: 'Buku berhasil ditambahkan',
-    //     data: {
-    //       bookId: newBook.id,
-    //     },
-    //   });
-    //   response.code(201);
-    //   return response;
-    return h.status(201).json({
+      return h.status(201).json({
             status: 'success',
             message: 'Buku berhasil ditambahkan',
             data: {
@@ -105,13 +95,7 @@ const addBooksHandler = (request, h) => {
             },
           })
     }
-  
-    // const response = h.response({
-    //   status: 'error',
-    //   message: 'Catatan gagal ditambahkan',
-    // });
-    // response.code(500);
-    // return response;
+
     return h.status(500).json({
           status: 'error',
           message: 'Catatan gagal ditambahkan',
@@ -126,28 +110,20 @@ const getAllBooksHandler = (request, h) => {
     if (readQuery !== undefined) {
       bookList = readFilter(bookList, readQuery);
     }
-  
+
     if (finishQuery !== undefined) {
       bookList = finishFilter(bookList, finishQuery);
     }
+
     if (queryName !== undefined) {
       bookList = nameFilter(bookList, queryName);
     }
-  
   
     bookList = bookList.map((book) => {
       const { id, name, publisher } = book;
       return { id, name, publisher };
     });
   
-    // const response = h.response({
-    //   status: 'success',
-    //   data: {
-    //     books: bookList,
-    //   },
-    // });
-    // response.code(200);
-    // return response;
     return h.status(200).json({
         status: 'success', 
         data: {
@@ -156,8 +132,7 @@ const getAllBooksHandler = (request, h) => {
     })
 }
 const getBookByIdHandler = (request, h) => {
-  const { bookId }= request.params;
-  
+  const { bookId } = request.params;
   const book = books.filter((n) => n.id === bookId)[0];
 
   if (book !== undefined) {
@@ -169,62 +144,45 @@ const getBookByIdHandler = (request, h) => {
     })
   }
 
-  // const response = h.response({
-  //   status: 'fail',
-  //   message: 'Buku tidak ditemukan',
-  // });
-  // response.code(404);
-  // return response;
-      return h.status(404).json({      
-          status: 'fail',
-          message: 'Buku tidak ditemukan',})
+  return h.status(404).json({      
+      status: 'fail',
+      message: 'Buku tidak ditemukan',})
 }
 const deleteBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
-
   const index = books.findIndex((book) => book.id === bookId);
 
   if (index !== -1) {
     books.splice(index, 1);
-  //   const response = h.response({
-  //     status: 'success',
-  //     message: 'Buku berhasil dihapus',
-  //   });
-  //   response.code(200);
-  //   return response;
       return h.status(200).json({
           status: 'success',
           message: 'Buku berhasil dihapus',
       })
   }
   
-  // const response = h.response({
-  //     status: 'fail',
-  //     message: 'Buku gagal dihapus. Id tidak ditemukan',
-  // });
-  // response.code(404);
-  // return response;
   return h.status(404).json({
-          status: 'fail',
-          message: 'Buku gagal dihapus. Id tidak ditemukan',
-      })
+        status: 'fail',
+        message: 'Buku gagal dihapus. Id tidak ditemukan',
+  })
 }
-const putBookByIdHandler = (request, h) => {
+const putBookByIdHandler = (request, h, next) => {
   const { bookId } = request.params;
   // curl -H 'Content-Type: application/json' -X PUT -d "{name : 'njir', year : 2021, author : 'Aga', summary : 'lorem' , publisher : 'gramedia', pageCount : 12, readPage : 3, reading : false,}" 'http://localhost:3000'
-//  return h.json(request.body);
+  let userData = null; 
+  try {
+    // Parse a JSON
+    userData = JSON.parse(JSON.stringify(request.body)); 
+  } catch (e) {
+    // You can read e for more info
+      // Let's assume the error is that we already have parsed the payload
+      // So just return that
+      userData = request.body;
+  }
   const {name,year,author,summary,publisher,pageCount,readPage,reading} = request.body;
-  console.log('loh')
 
   const updatedAt = new Date().toISOString();
 
   if (name === '' || name === undefined) {
-  //   const response = h.response({
-  //     status: 'fail',
-  //     message: 'Gagal memperbarui buku. Mohon isi nama buku',
-  //   });
-  //   response.code(400);
-  //   return response;
       return h.status(400).json({
               status: 'fail',
               message: 'Gagal memperbarui buku. Mohon isi nama buku',
@@ -232,12 +190,6 @@ const putBookByIdHandler = (request, h) => {
   }
   
   if (readPage > pageCount) {
-      // const response = h.response({
-      //     status: 'fail',
-      //     message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
-      // });
-      // response.code(400);
-      // return response;
       return h.status(400).json({
               status: 'fail',
               message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
@@ -260,27 +212,16 @@ const putBookByIdHandler = (request, h) => {
       updatedAt,
     };
 
-  //   const response = h.response({
-  //     status: 'success',
-  //     message: 'Buku berhasil diperbarui',
-  //   });
-  //   response.code(200);
-  //   return response;
-      return h.status(200).json({
-              status: 'success',
-              message: 'Buku berhasil diperbarui',
-            })
+    return h.status(200).json({
+      status: 'success',
+      message: 'Buku berhasil diperbarui',
+    })
   }
   
-  // const response = h.response({
-  //     status: 'fail',
-  //     message: 'Gagal memperbarui buku. Id tidak ditemukan',
-  // });
-  // response.code(404);
-  // return response;
   return h.status(404).json({
           status: 'fail',
           message: 'Gagal memperbarui buku. Id tidak ditemukan',
       })
+  next();
 }
 module.exports = {addBooksHandler,getAllBooksHandler,getBookByIdHandler,deleteBookByIdHandler,putBookByIdHandler};
